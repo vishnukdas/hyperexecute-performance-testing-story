@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Performance testing on HyperExecute: run JMeter, Gatling and k6 load tests from six regions with managed load generators and live reports.">
+<meta name="description" content="Performance testing on HyperExecute: run JMeter, Gatling and k6 load tests from multiple regions in a single job, with managed load generators and live reports.">
 <style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
 <title>HyperExecute Performance Testing</title>
 <meta name="claude:viewport-fit-sides" content="cover">
@@ -538,6 +538,7 @@ h1,h2,h3{color:var(--navy)}
 .btn{box-shadow:0 6px 18px -8px rgba(30,86,227,.6)}
 .btn.ghost{background:var(--card);box-shadow:var(--shadow)}
 .code,.logs{box-shadow:inset 0 0 0 1px rgba(255,255,255,.04)}
+.distrow.addreg span:first-child{color:var(--load);font-weight:700;font-size:13px}
 /* capabilities */
 .capx{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:18px;align-items:start}
 @media(max-width:960px){.capx{grid-template-columns:minmax(0,1fr)}}
@@ -713,7 +714,7 @@ a.btn{text-decoration:none}
         <div class="lockup"><img src="data:image/png;base64,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" alt="TestMu AI"><span class="div"></span><span class="he-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-fork"/></svg>HyperExecute</span></div>
         <div class="audrow"><div class="seg sm audSeg" role="group" aria-label="Audience"><button type="button" data-a="new" aria-pressed="true">New to HyperExecute</button><button type="button" data-a="ex" aria-pressed="false">Already a customer</button></div></div>
         <div class="kicker">Performance testing on HyperExecute</div>
-        <h1 data-aud="new">Load test from <span class="hl">six regions</span> with the plans you already have.</h1>
+        <h1 data-aud="new">Load test from <span class="hl">multiple regions</span> in a single job, with the plans you already have.</h1>
         <h1 data-aud="ex">Run your load tests where your <span class="hl">functional tests</span> already run.</h1>
         <p class="lede" data-aud="new">Your existing JMeter, Gatling and k6 plans. Managed load generators. Live reports. Nothing to install or maintain.</p>
         <p class="lede" data-aud="ex">Add load testing to the HyperExecute account you already use. Same login, same CLI, no new infrastructure.</p>
@@ -725,13 +726,13 @@ a.btn{text-decoration:none}
         <div class="stats">
           <div class="stat"><b>3</b><span>Load tools: JMeter, Gatling, k6</span></div>
           <div class="stat"><b>8,000</b><span>Concurrent VUs on Pro, custom on Enterprise</span></div>
-          <div class="stat"><b>6</b><span>Load regions, mixed by percentage in one test</span></div>
+          <div class="stat"><b>1</b><span>Job, with load split across regions by percentage</span></div>
           <div class="stat"><b>0</b><span>Load generators left running after a test</span></div>
         </div>
       </div>
       <div class="herofx">
-        <canvas id="heroCv" role="img" aria-label="Animated map: virtual users travel from six HyperExecute load regions to your application"></canvas>
-        <div class="hf-chip c1"><span class="livedot"></span><b>6 regions</b><span>in one test</span></div>
+        <canvas id="heroCv" role="img" aria-label="Animated map: virtual users travel from several HyperExecute load regions to your application"></canvas>
+        <div class="hf-chip c1"><span class="livedot"></span><b>Multi-region</b><span>in a single job</span></div>
         <div class="hf-chip c2"><b>Your app</b><span>wherever it is hosted</span></div>
       </div>
     </div>
@@ -762,14 +763,14 @@ a.btn{text-decoration:none}
       <div class="hub"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-fork"/></svg><b>HyperExecute</b><span>Performance testing</span></div>
 <div class="pc" style="--k:0;--bx:19%;--by:20%;--br:-5deg;--ax:16%;--ay:18%"><span class="pi" aria-hidden="true"></span><span class="pt"><span class="b">Load servers to build, patch and pay for</span><span class="a">Generators created per run, then destroyed</span></span></div>
 <div class="pc" style="--k:1;--bx:52%;--by:11%;--br:3deg;--ax:16%;--ay:50%"><span class="pi" aria-hidden="true"></span><span class="pt"><span class="b">A second tool and contract just for load</span><span class="a">One platform for functional and load</span></span></div>
-<div class="pc" style="--k:2;--bx:83%;--by:24%;--br:-3deg;--ax:16%;--ay:82%"><span class="pi" aria-hidden="true"></span><span class="pt"><span class="b">Load from a single location</span><span class="a">Six regions in one test, split by percentage</span></span></div>
+<div class="pc" style="--k:2;--bx:83%;--by:24%;--br:-3deg;--ax:16%;--ay:82%"><span class="pi" aria-hidden="true"></span><span class="pt"><span class="b">Load from a single location</span><span class="a">Load from multiple regions in one job, split by percentage</span></span></div>
 <div class="pc" style="--k:3;--bx:22%;--by:74%;--br:4deg;--ax:84%;--ay:18%"><span class="pi" aria-hidden="true"></span><span class="pt"><span class="b">Scripts rewritten for every new tool</span><span class="a">Your .jmx, Gatling and k6 scripts run as they are</span></span></div>
 <div class="pc" style="--k:4;--bx:55%;--by:86%;--br:-4deg;--ax:84%;--ay:50%"><span class="pi" aria-hidden="true"></span><span class="pt"><span class="b">Results pieced together after the run</span><span class="a">Live reports with p90, p95 and p99</span></span></div>
 <div class="pc" style="--k:5;--bx:84%;--by:70%;--br:3deg;--ax:84%;--ay:82%"><span class="pi" aria-hidden="true"></span><span class="pt"><span class="b">Was it the app, or the load rig?</span><span class="a">Task Metrics shows generator health</span></span></div>
     </div>
     <div class="mstats pstats">
       <div><b data-before="Always on" data-after="None">Always on</b><span>Load servers between tests</span></div>
-      <div><b data-before="1" data-after="6">1</b><span>Regions in one test</span></div>
+      <div><b data-before="Single" data-after="Multi">Single</b><span>Load regions per job</span></div>
       <div><b data-before="Rewrite" data-after="None">Rewrite</b><span>Script changes to switch</span></div>
       <div><b data-before="After" data-after="Live">After</b><span>When you see results</span></div>
     </div>
@@ -802,7 +803,7 @@ a.btn{text-decoration:none}
     <div class="pillars" style="margin-top:26px">
       <div class="pillar"><span class="n">Bring your plans</span><h3>No rewrite</h3><p>.jmx plans with CSV data, Gatling Java DSL and k6 scripts run as they are.</p></div>
       <div class="pillar"><span class="n">Every release</span><h3>Catch latency drift early</h3><p>Right-sized load runs on every release or nightly, next to the functional suite.</p></div>
-      <div class="pillar"><span class="n">Global by design</span><h3>Six regions, one test</h3><p>Split users by percentage across the Americas and Asia.</p></div>
+      <div class="pillar"><span class="n">Global by design</span><h3>Many regions, one job</h3><p>Split users by percentage across regions in a single run.</p></div>
       <div class="pillar"><span class="n">No idle fleet</span><h3>Pay for runs, not servers</h3><p>Generators are created for each run and destroyed when it ends.</p></div>
     </div>
   </section>
@@ -849,7 +850,7 @@ a.btn{text-decoration:none}
     <div class="head">
       <div class="kicker">Global load</div>
       <h2>Send load from where your users actually are.</h2>
-      <p class="lede">Pick a traffic mix. Watch the users arrive.</p>
+      <p class="lede">One job, load from multiple regions. Pick a mix and watch the users arrive.</p>
     </div>
     <div class="row" style="justify-content:space-between;margin-bottom:12px">
       <div class="chips" id="gPresets"></div>
@@ -1096,7 +1097,7 @@ var CH=[
  {id:'why',label:'One platform',q:'Functional and load, one contract',act:0},
  {id:'tests',label:'Test types',q:'Load, stress, spike and soak',act:0},
  {id:'catalog',label:'Capabilities',q:'Every setting is a feature',act:0},
- {id:'global',label:'Global load',q:'Six regions in one test',act:1},
+ {id:'global',label:'Global load',q:'Many regions, one job',act:1},
  {id:'run',label:'See a run',q:'From .jmx to report',act:1},
  {id:'lab',label:'Size a test',q:'Users, machines, regions, plan',act:1},
  {id:'tools',label:'Tools and CI',q:'JMeter, Gatling, k6, pipelines',act:1},
@@ -1215,7 +1216,7 @@ function renderRun(){
   }else if(rs===2){
     $('#mockUrl').textContent='hyperexecute / checkout-perf / run / load distribution';
     var d=[['East US','Richmond, VA',60],['Central India','Pune',40],['West US 2','Moses Lake, WA',0],['Southeast Asia','Singapore',0],['Brazil South','São Paulo State',0],['Mexico Central','Querétaro State',0]];
-    body.innerHTML='<div class="label"><span class="featlink" data-feat="pct">Test Load Distribution</span></div>'+d.map(function(r){return '<div class="distrow"><span><b>'+r[0]+'</b> <span class="small muted">'+r[1]+'</span></span><span class="bar"><i style="width:'+r[2]+'%"></i></span><span class="mono" style="text-align:right">'+r[2]+'%</span></div>'}).join('')+
+    body.innerHTML='<div class="label"><span class="featlink" data-feat="pct">Test Load Distribution</span></div>'+d.filter(function(r){return r[2]>0}).map(function(r){return '<div class="distrow"><span><b>'+r[0]+'</b> <span class="small muted">'+r[1]+'</span></span><span class="bar"><i style="width:'+r[2]+'%"></i></span><span class="mono" style="text-align:right">'+r[2]+'%</span></div>'}).join('')+'<div class="distrow addreg"><span>+ Add region</span><span></span><span></span></div>'+
      '<button class="tog" type="button" aria-pressed="true" tabindex="-1"><span class="sw"></span><span><b class="featlink" data-feat="ovr">Total Load Distribution override on</b><span>500 users split 300 / 200 by region, then about 100 / 67 per machine. Without it, every machine in every region would run all 500.</span></span></button>';
     hint.textContent='Tap a label for the capability. Multi-region is an Enterprise feature.';
   }else if(rs===3){
@@ -1460,7 +1461,7 @@ var FAQ=[
  {c:'Product',q:'Do JMeter plugins work?',a:'Plans that use Plugins Manager components should be validated in a trial run before rollout. Upload the plan and run it at low load in one region; any plugin that fails to load shows up in the logs.'},
  {c:'Product',q:'How many virtual users can we run?',a:'Up to 100 on Free, 2,000 on Basic, 8,000 on Pro, and a custom limit on Enterprise. Plan for up to about 2,000 users per JMeter generator; heavy payloads, browser samplers and missing timeouts lower that.'},
  {c:'Product',q:'Why would a test generate more users than we entered?',a:'Without the Total Load Distribution override, the thread count runs on every machine in every region: 250 users on 3 machines across 2 regions gives 1,500 users. With the override on, users are split across regions and machines, so 500 means 500.'},
- {c:'Product',q:'Which regions can generate load?',a:'East US (default), West US 2, Central India, Southeast Asia, Brazil South and Mexico Central. Free, Basic and Pro use one region per test; Enterprise splits users by percentage across regions.'},
+ {c:'Product',q:'Can one test generate load from more than one region?',a:'Yes. A single job can draw users from several regions across the Americas and Asia at once, with a percentage set for each region. Free, Basic and Pro use one region per test; Enterprise splits users by percentage across regions.'},
  {c:'Product',q:'Which test types can we run?',a:'Load, stress, spike and soak, all in one Performance Testing subscription. Gatling has portal presets for Capacity, Stress and Soak. For JMeter and k6 the shape comes from the plan plus the users, duration and ramp-up settings.'},
  {c:'Product',q:'How long can a test run?',a:'40 minutes on Free, 2 hours on Basic, 6 hours on Pro, custom on Enterprise. For soak tests over 120 minutes, spread the load across more machines.'},
  {c:'Product',q:'What reports do we get?',a:'Summary, Timeline, Request Stats, Errors and Logs for JMeter, updated live during the run. Metrics include response time with 90th, 95th and 99th percentiles, throughput, bandwidth and error rate, in milliseconds or seconds. Gatling runs also attach the full Gatling HTML report.'},
@@ -1500,7 +1501,7 @@ var GRP=[
  {id:'bring',n:'Bring your tests',d:'Use what you have',c:'var(--exec)'},
  {id:'shape',n:'Shape the load',d:'Any traffic pattern',c:'var(--load)'},
  {id:'scale',n:'Scale out',d:'Spread across machines',c:'var(--plan)'},
- {id:'global',n:'Go global',d:'Six regions, one test',c:'var(--intel)'},
+ {id:'global',n:'Go global',d:'Many regions, one job',c:'var(--intel)'},
  {id:'tune',n:'Tune the engine',d:'Match your runtime',c:'var(--warn)'},
  {id:'auto',n:'Automate',d:'Runs on schedule or in CI',c:'var(--pink)'},
  {id:'read',n:'Read the results',d:'See what broke and why',c:'var(--good)'},
@@ -1523,7 +1524,7 @@ var FT=[
  ['engine','scale','G','Max Users per Engine','Load distribution','Users per engine cap','Gatling engines sized for you.','Upper bound on the users each Gatling engine carries (default 2,000).','Keeps engines healthy so the results describe the app, not the generator.','Max Users per Engine: 2000'],
  ['split','scale','J','Split CSV','Run form','Split CSV','Each generator gets its own rows.','Divides the CSV data so every generator works on a distinct slice.','No two virtual users log in with the same account across machines, so results reflect real behaviour.','users.csv split into 6 slices of about 2,067 rows'],
  ['gto','scale','G','Global Timeout','Load distribution','Global timeout','Runaway runs stop on their own.','Maximum time a Gatling run may take (default 90 minutes).','Protects VU-hours and stops a stuck run from blocking the pipeline.','Global Timeout: 90 min'],
- ['regions','global','JG','6 load regions','Load distribution','Six load regions','Americas and Asia in one test.','East US (default), West US 2, Central India, Southeast Asia, Brazil South and Mexico Central.','Generate load from the markets your users are actually in.','East US, Central India, Brazil South','Enterprise for multi-region'],
+ ['regions','global','JG','Multi-region load','Load distribution','Multi-region load','Americas and Asia in one job.','Generate load from several regions across the Americas and Asia within the same job.','Generate load from the markets your users are actually in.','East US, Central India, Brazil South','Enterprise for multi-region'],
  ['pct','global','JG','Test Load Distribution','Load distribution','Percentage per region','Decide where each user comes from.','Give each selected region a share of the total users.','Model a real traffic mix, and change it between runs without editing the script.','East US 50%, Central India 30%, Brazil South 20%','Enterprise'],
  ['ovr','global','J','Total Load Distribution override','Run form','Split, not replicate','Exactly the users you asked for.','Divides total users across regions and then across machines. Without it, the thread count runs on every machine in every region.','500 users stays 500 users. The team avoids generating, and paying for, several times the planned load.','500 users, 2 regions, 3 machines: 84 / 83 / 83 per machine'],
  ['ips','global','JGK','Static outbound IPs','Via support','Fixed egress IPs','Allowlist generators on staging.','Static outbound IP addresses for the generators, arranged through support.','Security teams can open staging to known sources only.','Allowlisted on the staging WAF'],
